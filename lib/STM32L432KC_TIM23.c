@@ -28,10 +28,11 @@ void initTIM_PWM(TIM23_TypeDef * TIMx){
   TIMx->SMCR &= ~(1<<16);
   TIMx->SMCR &= ~(0b111 << 0);
 
-  // set prescale to 799 since divide by psc + 1 to get CK_CNT at 100 kHz
+  // set prescale to 199 since divide by psc + 1 to get CK_CNT at 400 kHz (799 and 100 khz)
   //TIMx->PSC &= 0;
-  //TIMx->PSC |= 0x31F;
-  TIMx->PSC |= 0b100111000011111; // set CK_CNT at 4kHz for testing with LED TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+  TIMx->PSC |= 199;
+  //TIMx->PSC |= 0x31F; 
+  //TIMx->PSC |= 0b100111000011111; // set CK_CNT at 4kHz for testing with LED 
 
   // set auto reset register to reset value
   TIMx->ARR = 0xFFFFFFFF;
@@ -46,6 +47,7 @@ void initTIM_PWM(TIM23_TypeDef * TIMx){
   TIMx->CR1 |= (1 << 7);
   //initialize all registers by setting UG bit (0)in EGR register
   TIMx->EGR |= (1 << 0);
+
   // enable counter by setting CEN bit (0) in CR1
   TIMx->CR1 |= (1 << 0);
   // enable channel 2 output CC2E bit 4 in CCER
@@ -59,8 +61,8 @@ void update_freq(TIM23_TypeDef * TIMx, uint32_t newFreq){
     TIMx->ARR = 0xFFFFFFFF; //???????????????????????I'm concerned this will still limit the duration of my rests
   }
   else{
-  // convert freq to ARR by dividing ck_CNT freq (80kHz) by new freq TESTTTTTTTTTTTTTTTTTTTTTtt 4khz
-  volatile uint32_t newARR = 4E3 / newFreq;
+  // convert freq to ARR by dividing ck_CNT freq (100kHz) by new freq 
+  volatile uint32_t newARR = 400E3 / newFreq;
   TIMx->ARR = newARR;
 
   //keep duty cycle at 50%
